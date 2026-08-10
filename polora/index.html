@@ -1318,18 +1318,23 @@
     // inside its scrollable box rather than collapsing the layout.
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-</head>
+<style>
+      .topbar { justify-content: flex-start; }
+      .topbar .toplinks { margin-left: auto; }
+      .back-home { font-size: 0.86rem; font-weight: 700; white-space: nowrap; }
+    </style>
+  </head>
 <body>
   <a class="skip-link" href="#article-main">Skip to article</a>
 
   <header>
     <div class="topbar">
+      <a href="/" class="back-home">← Nikhil Ghosh</a>
       <a class="wordmark" href="#top" aria-label="PoLoRA article home">
         <span class="wordmark-mark" aria-hidden="true">❄️</span>
         <span>PoLoRA</span>
       </a>
       <nav class="toplinks" aria-label="Primary">
-        <a href="/" class="back-home">← Nikhil Ghosh</a>
         <a href="#evidence">Results</a>
         <a href="https://arxiv.org/abs/2607.17620" target="_blank" rel="noopener noreferrer">Paper ↗</a>
         <a href="https://github.com/nikhilgsh/polora" target="_blank" rel="noopener noreferrer">Code ↗</a>

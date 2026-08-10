@@ -18,10 +18,6 @@ SITE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE_REPO="${1:-$HOME/polora_website}"
 DEST="$SITE_ROOT/polora"
 
-BACK_LINK='<a href="/" class="back-home">← Nikhil Ghosh</a>'
-# First child of the topbar nav, so the link sits at the start of the row.
-ANCHOR='<nav class="toplinks" aria-label="Primary">'
-
 if [ ! -f "$SOURCE_REPO/index.html" ]; then
   echo "no built index.html under $SOURCE_REPO" >&2
   exit 1
@@ -35,20 +31,37 @@ mkdir -p "$DEST/assets"
 cp "$SOURCE_REPO/index.html" "$DEST/index.html"
 cp "$SOURCE_REPO"/assets/*.svg "$DEST/assets/"
 
-python3 - "$DEST/index.html" "$ANCHOR" "$BACK_LINK" <<'PY'
+python3 - "$DEST/index.html" <<'PY'
 import sys
 
-path, anchor, link = sys.argv[1], sys.argv[2], sys.argv[3]
+path = sys.argv[1]
 html = open(path, encoding="utf-8").read()
 
-if html.count(anchor) != 1:
-    sys.exit(f"expected exactly one {anchor!r} in {path}, found {html.count(anchor)}")
+# Top left, ahead of the wordmark: that is where a reader looks for the way out
+# of a page, and it keeps the link clear of .toplinks, whose items are dropped
+# below 560px so only "Code" survives.
+WORDMARK = '<a class="wordmark" href="#top"'
+LINK = '<a href="/" class="back-home">← Nikhil Ghosh</a>\n      '
 
-# Match the indentation of the nav's existing children so the output stays
-# readable when someone views source.
-html = html.replace(anchor, anchor + "\n        " + link, 1)
+# .topbar is space-between with two children, so a third would centre the
+# wordmark. Pack the pair to the left and push the nav right instead.
+STYLE = """<style>
+      .topbar { justify-content: flex-start; }
+      .topbar .toplinks { margin-left: auto; }
+      .back-home { font-size: 0.86rem; font-weight: 700; white-space: nowrap; }
+    </style>
+  """
+
+for name, anchor, insert in (
+    ("back-link", WORDMARK, LINK + WORDMARK),
+    ("style block", "</head>", STYLE + "</head>"),
+):
+    if html.count(anchor) != 1:
+        sys.exit(f"expected exactly one {anchor!r} in {path}, found {html.count(anchor)}")
+    html = html.replace(anchor, insert, 1)
+    print(f"{name} inserted")
+
 open(path, "w", encoding="utf-8").write(html)
-print("back-link inserted")
 PY
 
 echo "synced $SOURCE_REPO -> $DEST"
