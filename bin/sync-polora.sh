@@ -41,7 +41,7 @@ html = open(path, encoding="utf-8").read()
 # of a page, and it keeps the link clear of .toplinks, whose items are dropped
 # below 560px so only "Code" survives.
 WORDMARK = '<a class="wordmark" href="#top"'
-LINK = '<a href="/" class="back-home">← Nikhil Ghosh</a>\n      '
+LINK = '<a href="/" class="back-home">← Home</a>\n      '
 
 # .topbar is space-between with two children, so a third would centre the
 # wordmark. Pack the pair to the left and push the nav right instead.
