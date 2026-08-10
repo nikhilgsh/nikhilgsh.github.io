@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://nikhil-ghosh-berkeley.github.io/sitemap.xml
+Sitemap: https://nikhilgsh.github.io/sitemap.xml
