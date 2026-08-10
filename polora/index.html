@@ -623,28 +623,28 @@
       align-items: baseline;
     }
 
-    /* The number reads as part of the title, so it takes the title's colour
-       and is set slightly smaller to stay subordinate to it. The numbering
-       itself stays because the frontmatter Outline and the side outline are
-       numbered lists, and their numbers have to correspond to something in
-       the body -- "1." matches how those lists mark themselves exactly, down
-       to the full stop. */
-    /* Number and stop are one token in one pseudo-element: they share a colour
-       and a size, so nothing forces them apart. The stop stays because the
-       frontmatter Outline and the side outline mark their entries "1.", and a
-       reader matching an outline entry to a heading should find the same token
-       in both places; it also keeps the number from running into the title.
-       Ink rather than the accent, because accent is scarce here -- it marks the
-       TL;DR list and the claim tags, the two places a skimming reader should
-       land -- and a full stop after a number carries no information to point
-       at. */
+    /* "1. Title": number and stop are one token in one pseudo-element, set in
+       the heading's own colour and size so the digit's cap-height matches the
+       title's capitals on their shared baseline. Scaled down they read as a
+       different, smaller thing sitting beside the title rather than as its
+       label -- the eye compares the two tops directly, so even a small
+       reduction shows.
+
+       The numbering exists because the frontmatter Outline and the side
+       outline are numbered lists whose entries the reader matches against
+       these headings; they mark themselves "1.", so the heading carries the
+       stop too and the two forms agree exactly. The stop also keeps the
+       number from running into the title.
+
+       Ink rather than the accent: accent is scarce here, marking the TL;DR
+       list and the claim tags, and a full stop after a number carries nothing
+       to point at. */
     .section.numbered h2::before {
       content: counter(section-number) ".";
       order: -2;
       margin-right: 0.28em;
       color: var(--ink);
       font-variant-numeric: tabular-nums;
-      font-size: 0.865em;
     }
 
     .section {
