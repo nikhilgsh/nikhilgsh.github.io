@@ -629,30 +629,22 @@
        numbered lists, and their numbers have to correspond to something in
        the body -- "1." matches how those lists mark themselves exactly, down
        to the full stop. */
+    /* Number and stop are one token in one pseudo-element: they share a colour
+       and a size, so nothing forces them apart. The stop stays because the
+       frontmatter Outline and the side outline mark their entries "1.", and a
+       reader matching an outline entry to a heading should find the same token
+       in both places; it also keeps the number from running into the title.
+       Ink rather than the accent, because accent is scarce here -- it marks the
+       TL;DR list and the claim tags, the two places a skimming reader should
+       land -- and a full stop after a number carries no information to point
+       at. */
     .section.numbered h2::before {
-      content: counter(section-number);
+      content: counter(section-number) ".";
       order: -2;
+      margin-right: 0.28em;
       color: var(--ink);
       font-variant-numeric: tabular-nums;
       font-size: 0.865em;
-    }
-
-    /* The stop takes the TL;DR markers' purple while the number stays ink, so
-       the accent lands on the one small mark. Its own pseudo-element because
-       the two colours differ, sized with the number so it reads as the
-       number's punctuation, and carrying the space that separates the pair
-       from the title. */
-    .section.numbered h2::after {
-      content: ".";
-      order: -1;
-      margin-right: 0.28em;
-      color: var(--coral);
-      font-size: 1.25em;
-      /* Pinned to 1 so scaling the glyph up cannot inflate the heading's line
-         box: the flex row is baseline-aligned, so a taller item would push the
-         whole heading down. A full stop sits on the baseline, so the enlarged
-         glyph stays put. */
-      line-height: 1;
     }
 
     .section {
@@ -938,20 +930,16 @@
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       text-align: right;
-      /* The number and its enlarged stop are one unit in a fixed-width column;
-         without this they can break onto two lines. */
+      /* The number and its stop are one unit in a fixed-width column; without
+         this they can break onto two lines. */
       white-space: nowrap;
     }
 
-    /* The stop carries the purple while the number stays in card ink, exactly
-       as in the section headings. --card-accent-2 rather than --coral: it is
-       the card-scoped token for the same purple (#872ee0 light, #b27aeb dark),
-       and anything drawn inside a card goes through the card tokens. */
+    /* Card ink, matching the section headings: the stop marks where the step
+       number ends, and the accent is reserved for the TL;DR list and the claim
+       tags rather than spent on punctuation. */
     .algo-number::after {
       content: ".";
-      color: var(--card-accent-2);
-      font-size: 1.25em;
-      line-height: 1;
     }
 
     .algo-step h4 {
