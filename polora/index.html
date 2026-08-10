@@ -13,13 +13,18 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' text-anchor='middle' dominant-baseline='central' font-size='88'%3E%E2%9D%84%EF%B8%8F%3C/text%3E%3C/svg%3E">
   <script>
     // Runs before first paint so a dark-mode reader never sees a white flash.
-    // An explicit choice wins; otherwise follow the operating system.
+    // An explicit choice wins; otherwise follow the operating system. Only
+    // "dark" and "light" count as a choice: a site sharing this origin and
+    // this storage key may also write "system", which means follow the OS.
     (function () {
       try {
         var saved = localStorage.getItem("theme");
-        var dark = saved
-          ? saved === "dark"
-          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var dark =
+          saved === "dark"
+            ? true
+            : saved === "light"
+              ? false
+              : window.matchMedia("(prefers-color-scheme: dark)").matches;
         if (dark) document.documentElement.setAttribute("data-theme", "dark");
       } catch (e) {}
     })();
@@ -213,7 +218,6 @@
     }
 
     h1 {
-      max-width: 950px;
       margin: 0;
       font-size: clamp(2rem, 4.6vw, 3.4rem);
     }
@@ -288,8 +292,11 @@
 
     .toplinks a { color: var(--ink); }
 
+    /* The article's own measure, not --wide-width: the title, byline and
+       buttons are prose, and setting them wider than every section below left
+       the opening block hanging outside the column the reader then follows. */
     .hero {
-      width: min(var(--wide-width), calc(100% - 2rem));
+      width: min(var(--body-width), calc(100% - 2rem));
       margin: 0 auto;
       padding: clamp(4rem, 10vw, 8rem) 0 3.2rem;
     }
@@ -304,7 +311,6 @@
     }
 
     .subtitle {
-      max-width: 890px;
       margin: 2rem 0 1.4rem;
       color: var(--muted);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -357,7 +363,7 @@
     .button.secondary:hover { color: var(--panel-fg); }
 
     .result-strip {
-      width: min(var(--wide-width), calc(100% - 2rem));
+      width: min(var(--body-width), calc(100% - 2rem));
       margin: 0 auto;
       display: grid;
       grid-auto-flow: column;
@@ -369,9 +375,17 @@
       box-shadow: var(--shadow);
     }
 
+    /* Centred rather than top-aligned: the value and its label are a single
+       block, and letting them sit against the top left the strip's lower half
+       empty. min-height is a floor for narrow viewports, where --metric-value
+       clamps down to 1.8rem and the cell would otherwise go squat; at full
+       size the content is taller than it and it never binds. */
     .metric {
-      min-height: 148px;
-      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 112px;
+      padding: 1.15rem 1.35rem;
       color: var(--card-fg);
       border-right: 1px solid var(--card-line);
     }
@@ -395,23 +409,22 @@
       text-transform: uppercase;
     }
 
+    /* The TL;DR is set on the page's own measure, so it lines up with every
+       section below it instead of straddling the wider figure column. The
+       outline is lifted out of the flow into the left margin (see the media
+       query further down), which is what leaves the TL;DR the full width. */
     .frontmatter {
-      width: min(var(--wide-width), calc(100% - 2rem));
+      position: relative;
+      width: min(var(--body-width), calc(100% - 2rem));
       margin: 2rem auto 7rem;
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
-      gap: 1.2rem;
     }
 
-    .tldr, .toc {
+    .tldr {
       padding: clamp(1.3rem, 3vw, 2rem);
+      background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 18px;
     }
-
-    .tldr { background: var(--surface); }
-
-    .toc { background: var(--paper-2); }
 
     .frontmatter h2 {
       margin: 0 0 1rem;
@@ -421,53 +434,54 @@
       text-transform: uppercase;
     }
 
-    .toc-back {
-      margin: 0.9rem 0 0;
-      padding: 0.9rem 0 0 1.3rem;
-      border-top: 1px solid var(--line);
-      list-style: none;
-    }
-
-    .tldr ul, .toc ol {
+    .tldr ul {
       margin: 0;
       padding-left: 1.3rem;
     }
 
-    .tldr li + li, .toc li + li { margin-top: 0.65rem; }
+    .tldr li + li { margin-top: 0.65rem; }
 
     .tldr li::marker { color: var(--coral); }
 
-    .toc {
-      font-size: 0.93rem;
-      line-height: 1.48;
-    }
-
-    .toc a {
-      color: var(--ink);
-      font-weight: 680;
-      text-decoration-color: transparent;
-    }
-
-    .toc a:hover { text-decoration-color: currentColor; }
-
-    /* Persistent left-margin outline, mirrored from #outline by footer.html's
-       script. Fixed (not sticky) so it stays put regardless of which ancestor
-       scrolls. `display: none` here is only the default -- the width rules
-       further down (search "HOW THE OUTLINE FOLLOWS THE READER") turn it on,
-       and that comment block is the one to read before changing any of these
-       numbers. Positioned against --wide-width, not --body-width: wide
-       sections are the widest thing that can sit beside the pane, and sizing
-       off the narrower --body-width let their left edge creep under it. */
+    /* The page's only outline, authored in header.html and standing in the
+       left margin the whole way down. Fixed (not sticky) so it stays put
+       regardless of which ancestor scrolls. `display: none` here is only the
+       default -- the width rules further down (search "HOW THE OUTLINE FOLLOWS
+       THE READER") turn it on, and that comment block is the one to read
+       before changing any of these numbers. Positioned against --wide-width,
+       not --body-width: wide sections are the widest thing that can sit beside
+       the pane, and sizing off the narrower --body-width let their left edge
+       creep under it. */
     .side-toc {
+      --pane-width: 150px;
       display: none;
       position: fixed;
       top: 7rem;
-      left: max(1.5rem, calc((100vw - var(--wide-width)) / 2 - 174px));
-      width: 150px;
+      /* Centred in the margin: the leftover space beside the content, less the
+         pane itself, split evenly, so the gap to the window edge equals the gap
+         to the content. --body-width is the right measure because everything in
+         the article is set on it -- the hero, the result strip, the sections
+         and the figures. The exception is .section.wide, which is defined but
+         used nowhere; give a section that class and it will run under the pane,
+         so measure against --wide-width again if you ever do. */
+      left: max(1.5rem, calc(((100vw - var(--body-width)) / 2 - var(--pane-width)) / 2));
+      width: var(--pane-width);
       max-height: calc(100vh - 9rem);
       overflow-y: scroll;
       font-size: 0.82rem;
       line-height: 1.4;
+    }
+
+    /* The same mono label the TL;DR card uses, so the two frontmatter-level
+       headings read as a pair. Full ink against the muted links beneath it. */
+    .side-toc h2 {
+      margin: 0 0 0.9rem;
+      color: var(--ink);
+      font-family: "SFMono-Regular", Menlo, Consolas, Monaco, "Liberation Mono", "Lucida Console", monospace;
+      font-size: 0.82rem;
+      font-weight: 650;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
     .side-toc a {
@@ -478,18 +492,29 @@
       text-decoration: none;
     }
 
+    /* Numbered by counter rather than by list markers, because the marker box
+       sits outside the link and the link is what carries the active border.
+       The numbers have to be here at all: they are what the section headings'
+       "1." corresponds to. Each nested list resets its own counter, so the
+       sub-list under Experiments numbers from 1 like the old markup did. */
     .side-toc ol {
       list-style: none;
       margin: 0;
       padding: 0;
+      counter-reset: toc;
     }
+
+    .side-toc ol > li { counter-increment: toc; }
+
+    .side-toc ol > li > a::before { content: counter(toc) ". "; }
 
     .side-toc li > ol { padding-left: 0.9rem; }
 
-    .side-toc > ol + ol {
-      margin-top: 0.75rem;
-      padding-top: 0.75rem;
+    .side-toc .toc-back {
+      margin: 0.75rem 0 0;
+      padding: 0.75rem 0 0;
       border-top: 1px solid var(--line);
+      list-style: none;
     }
 
     .side-toc li > ol a {
@@ -500,40 +525,39 @@
 
     .side-toc a:hover { color: var(--ink); }
 
+    /* Colour and the rule alone, no weight change: bolding the active entry
+       reflowed its line and made the list twitch as the reader scrolled. */
     .side-toc a.active {
       color: var(--ink);
       border-left-color: var(--blue);
-      font-weight: 650;
     }
 
     /* HOW THE OUTLINE FOLLOWS THE READER -- read this before changing any
        number below.
        ------------------------------------------------------------------
-       Once the static frontmatter outline (#outline) scrolls away,
-       footer.html puts .visible on BOTH the pane and the button; the two
-       rules here pick exactly one of them by window width, so they never
-       appear together:
+       There is one outline and it is on screen from the top of the page. No
+       script decides that any more; these two rules pick the pane or the
+       button purely by window width, so they never appear together.
 
-       1. >= 1536px: the pane is drawn in the left margin, always open,
-          following the reader. Why 1536 and not lower: the pane may not
-          cover the centred content, and the widest column on the page is
-          1120px (--wide-width: figures, the algorithm box, the result
-          strip). A 150px pane plus its 24px gutter needs 174px of margin,
-          and (1536-1120)/2 = 208px is the first comfortable fit. Lowering
-          this number without also narrowing --wide-width slides the pane
-          under the figures.
+       The pane may not cover the centred content. It is centred in whatever
+       margin is left beside the 820px article, so each side of it gets
+       ((100vw - 820) / 2 - 150) / 2. Requiring at least 24px there is what
+       sets the single threshold below:
 
-       2. below 1536px: there is no margin to park a pane in, so the same
-          outline becomes a panel opened by a floating "Outline" button.
-          This is a click instead of an always-open strip, which is the
-          trade for having any outline at all on a laptop or phone -- the
-          alternative is no navigation once the frontmatter scrolls off.
+         ((100vw - 820) / 2 - 150) / 2 >= 24  ->  100vw >= 1216px
 
-       If you want the always-open pane at narrower widths, the pane is not
-       the only thing to change: --wide-width has to come down to
-       --body-width in that band too, or the figures and the pane collide. */
-    @media (min-width: 1536px) {
-      .side-toc.visible { display: block; }
+       1. >= 1216px: the pane stands in the left margin the whole way down.
+
+       2. below 1216px: the margin is too narrow to hold it, so the outline
+          becomes a panel opened by the floating "Outline" button. A click
+          instead of an always-open strip is the trade for having any
+          navigation at all on a small screen.
+
+       --wide-width is deliberately not involved: nothing in the article is
+       set on it any more (only the topbar and the footer, neither of which
+       sits beside the pane). */
+    @media (min-width: 1216px) {
+      .side-toc { display: block; }
     }
 
     .outline-fab {
@@ -554,8 +578,8 @@
       font-weight: 750;
     }
 
-    @media (max-width: 1535px) {
-      .outline-fab.visible { display: inline-flex; }
+    @media (max-width: 1215px) {
+      .outline-fab { display: inline-flex; }
 
       /* The same nav, re-anchored as a panel above the button. */
       .side-toc.open {
@@ -585,34 +609,26 @@
 
     .section.numbered { counter-increment: section-number; }
 
-    /* "03 · Title": the zero-padded number and the separator dot pick up the
-       same accent as the TL;DR bullets, so the numbering reads as a label
-       rather than as part of the heading text. */
-    /* The separator is U+2219 BULLET OPERATOR rather than U+00B7 MIDDLE DOT:
-       same centred dot, drawn a little larger, which reads better against the
-       heading. Number and dot share one pseudo-element, so they cannot be
-       sized independently - a bigger glyph is the way to enlarge just the dot. */
-    /* "03 ∙ Title". The number and the separator need independent font sizes,
-       so each gets its own pseudo-element. A single ::before cannot do it: one
-       content string takes one font-size. ::after would render after the
-       heading text, so the flex container reorders it into place instead -
-       negative order values put both pseudo-elements ahead of the anonymous
-       flex item holding the heading text. */
+    /* "1. Title". Flex with a baseline alignment so the number, set smaller
+       than the title, still sits on the title's baseline; the negative orders
+       put both pseudo-elements ahead of the anonymous flex item holding the
+       heading text. No column-gap: the stop has to sit tight against its own
+       number, so the space before the title comes from the stop's margin
+       instead. Every heading is plain text, so the title is one anonymous flex
+       item -- a heading with inline markup would still be one item, since
+       contiguous inline content is collected into a single anonymous box. */
     .section.numbered h2 {
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;
-      column-gap: 0.42em;
     }
 
     /* The number reads as part of the title, so it takes the title's colour
        and is set slightly smaller to stay subordinate to it. The numbering
        itself stays because the frontmatter Outline and the side outline are
        numbered lists, and their numbers have to correspond to something in
-       the body -- plain decimal, so the three surfaces agree in form: those
-       lists mark themselves 1..9 and a padded 01 here would match none of
-       them. There are nine sections, so the pad width is never reached
-       anyway. */
+       the body -- "1." matches how those lists mark themselves exactly, down
+       to the full stop. */
     .section.numbered h2::before {
       content: counter(section-number);
       order: -2;
@@ -621,15 +637,22 @@
       font-size: 0.865em;
     }
 
-    /* U+2219 BULLET OPERATOR: a centred dot with more presence than U+00B7.
-       Accent-coloured, matching the TL;DR list markers: it is the one small
-       mark separating number from title, so the accent lands on the separator
-       rather than on either block of text. */
+    /* The stop takes the TL;DR markers' purple while the number stays ink, so
+       the accent lands on the one small mark. Its own pseudo-element because
+       the two colours differ, sized with the number so it reads as the
+       number's punctuation, and carrying the space that separates the pair
+       from the title. */
     .section.numbered h2::after {
-      content: "\2219";
+      content: ".";
       order: -1;
+      margin-right: 0.28em;
       color: var(--coral);
-      font-size: 0.787em;
+      font-size: 1.25em;
+      /* Pinned to 1 so scaling the glyph up cannot inflate the heading's line
+         box: the flex row is baseline-aligned, so a taller item would push the
+         whole heading down. A full stop sits on the baseline, so the enlarged
+         glyph stays put. */
+      line-height: 1;
     }
 
     .section {
@@ -892,7 +915,7 @@
        sits on the h4's baseline and stays there if either size moves. */
     .algo-step {
       display: grid;
-      grid-template-columns: 1.4rem minmax(0, 1fr);
+      grid-template-columns: 1.2rem minmax(0, 1fr);
       align-items: baseline;
       gap: 1rem;
       padding: 1.25rem 0;
@@ -900,20 +923,35 @@
       border-top: 1px solid var(--card-line);
     }
 
-    /* The section headings' treatment of a number, moved into the algorithm
-       box: plain decimal, tabular mono, accent colour, set at the heading's
-       own size so it labels the step rather than outranking it. A filled
-       accent disc here was the one piece of heavy chrome on a page that
-       otherwise spends colour on small marks. Right-aligned against a column
-       sized for one digit, so the rail reads as one edge beside the text and
-       a tenth step would still line up. */
+    /* The section headings' "1. Title", moved into the algorithm box: plain
+       decimal and a full stop, set at the step heading's own size so it labels
+       the step rather than outranking it. A filled accent disc here was the
+       one piece of heavy chrome on a page that otherwise spends colour on
+       small marks. Right-aligned against a column sized for one digit, so the
+       rail reads as one edge beside the text and a tenth step would still line
+       up. Not the mono face used elsewhere in this box: monospaced digits give
+       the full stop a whole character cell, which opens a gap between it and
+       the number it belongs to. */
     .algo-number {
-      color: var(--card-accent);
-      font-family: "SFMono-Regular", Menlo, Consolas, Monaco, "Liberation Mono", "Lucida Console", monospace;
+      color: var(--card-fg);
       font-size: 1.12rem;
-      font-weight: 800;
+      font-weight: 700;
       font-variant-numeric: tabular-nums;
       text-align: right;
+      /* The number and its enlarged stop are one unit in a fixed-width column;
+         without this they can break onto two lines. */
+      white-space: nowrap;
+    }
+
+    /* The stop carries the purple while the number stays in card ink, exactly
+       as in the section headings. --card-accent-2 rather than --coral: it is
+       the card-scoped token for the same purple (#872ee0 light, #b27aeb dark),
+       and anything drawn inside a card goes through the card tokens. */
+    .algo-number::after {
+      content: ".";
+      color: var(--card-accent-2);
+      font-size: 1.25em;
+      line-height: 1;
     }
 
     .algo-step h4 {
@@ -1197,7 +1235,10 @@
 
       .metric { padding: 1.1rem; }
 
-      .frontmatter, .footer-inner { grid-template-columns: 1fr; }
+      /* .frontmatter is no longer a grid -- the TL;DR is a single column at
+         every width, and the outline is either in the margin or in the flow
+         beneath it. */
+      .footer-inner { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 560px) {
@@ -1206,7 +1247,7 @@
       h1 { font-size: clamp(1.85rem, 9vw, 2.5rem); }
       .subtitle { font-size: 1.1rem; }
       .result-strip { grid-auto-flow: row; grid-auto-columns: auto; }
-      .metric { min-height: 122px; border-right: 0; border-bottom: 1px solid var(--card-line); }
+      .metric { min-height: 96px; border-right: 0; border-bottom: 1px solid var(--card-line); }
       .metric:last-child { border-bottom: 0; }
       .frontmatter { margin-bottom: 5rem; }
       .section { padding: 4.5rem 0; }
@@ -1223,7 +1264,7 @@
     @media print {
       :root { --paper: #fff; --white: #fff; --ink: #111; }
       body { background: #fff; color: #111; font-size: 11pt; }
-      .skip-link, .topbar, .hero-actions, .toc { display: none !important; }
+      .skip-link, .topbar, .hero-actions, .side-toc, .outline-fab { display: none !important; }
       .hero, .section, .section.wide, .frontmatter, figure { width: 100%; }
       .hero { padding: 2rem 0; }
       .section { padding: 1.75rem 0; }
@@ -1250,8 +1291,9 @@
       .structure-map, .algorithm, .equation-card, .remember { background: #fff; }
       .algorithm-head, .algorithm-head h3, .algorithm-head span,
       .algo-step, .algo-step h4, .algo-step p { color: #111; background: #ddd; }
-      /* No fill: on screen this is a bare numeral, not the old accent disc. */
-      .algo-number { color: #111; background: none; }
+      /* No fill: on screen this is a bare numeral, not the old accent disc.
+         The stop is accent-coloured there; on paper it joins the ink. */
+      .algo-number, .algo-number::after { color: #111; background: none; }
       .algo-step { border-top-color: #bbb; }
       /* Product diagram: invert to dark-on-white, dashed strokes mark the updates. */
       .pd-txt, .pd-lbl-b, .pd-lbl-a, .pd-lbl-upd,
@@ -1299,7 +1341,6 @@
         <span>PoLoRA</span>
       </a>
       <nav class="toplinks" aria-label="Primary">
-        <a href="#outline">Outline</a>
         <a href="#evidence">Results</a>
         <a href="https://arxiv.org/abs/2607.17620" target="_blank" rel="noopener noreferrer">Paper ↗</a>
         <a href="https://github.com/nikhilgsh/polora" target="_blank" rel="noopener noreferrer">Code ↗</a>
@@ -1343,36 +1384,39 @@
         </ul>
       </section>
 
-      <nav class="toc" id="outline" aria-labelledby="outline-title">
-        <h2 id="outline-title">Outline</h2>
-        <ol>
-          <li><a href="#product">LoRA trains a product</a></li>
-          <li><a href="#product-muon">Product Muon</a></li>
-          <li><a href="#loss-control">Preconditioned Muon</a></li>
-          <li><a href="#direction">The PoLoRA direction</a></li>
-          <li><a href="#magnitude">The magnitude rule</a></li>
-          <li><a href="#algorithm">The PoLoRA step</a></li>
-          <li><a href="#practical">Computational cost</a></li>
-          <li>
-            <a href="#evidence">Experiments</a>
-            <ol>
-              <li><a href="#evidence-results">PoLoRA speedups</a></li>
-              <li><a href="#evidence-ablation">Component ablation</a></li>
-              <li><a href="#evidence-lr-transfer">Learning-rate transfer across ranks</a></li>
-              <li><a href="#evidence-distribution-shift">Effect of the dataset</a></li>
-            </ol>
-          </li>
-          <li><a href="#discussion">Conclusion</a></li>
-        </ol>
-        <ul class="toc-back">
-          <li><a href="#footnotes">Footnotes</a></li>
-          <li><a href="#references">References</a></li>
-          <li><a href="#cite">Citing this work</a></li>
-        </ul>
-      </nav>
     </div>
 
-    <nav class="side-toc" id="side-outline" aria-label="Section outline (current position)"></nav>
+    <!-- The one outline on the page. It used to be duplicated: a copy here in
+         the frontmatter and a mirror of it in the margin, swapped on scroll,
+         which is why the two could look different. This is now the only copy,
+         hand-maintained, present the whole way down. -->
+    <nav class="side-toc" id="side-outline" aria-labelledby="side-outline-title">
+      <h2 id="side-outline-title">Outline</h2>
+      <ol>
+        <li><a href="#product">LoRA trains a product</a></li>
+        <li><a href="#product-muon">Product Muon</a></li>
+        <li><a href="#loss-control">Preconditioned Muon</a></li>
+        <li><a href="#direction">The PoLoRA direction</a></li>
+        <li><a href="#magnitude">The magnitude rule</a></li>
+        <li><a href="#algorithm">The PoLoRA step</a></li>
+        <li><a href="#practical">Computational cost</a></li>
+        <li>
+          <a href="#evidence">Experiments</a>
+          <ol>
+            <li><a href="#evidence-results">PoLoRA speedups</a></li>
+            <li><a href="#evidence-ablation">Component ablation</a></li>
+            <li><a href="#evidence-lr-transfer">Learning-rate transfer across ranks</a></li>
+            <li><a href="#evidence-distribution-shift">Effect of the dataset</a></li>
+          </ol>
+        </li>
+        <li><a href="#discussion">Conclusion</a></li>
+      </ol>
+      <ul class="toc-back">
+        <li><a href="#footnotes">Footnotes</a></li>
+        <li><a href="#references">References</a></li>
+        <li><a href="#cite">Citing this work</a></li>
+      </ul>
+    </nav>
     <button class="outline-fab" id="outline-fab" type="button" aria-expanded="false" aria-controls="side-outline">Outline</button>
   </header>
 
@@ -2285,42 +2329,16 @@
   <script>
     (function () {
       var side = document.getElementById("side-outline");
-      var source = document.getElementById("outline");
-      if (!side || !source) return;
+      if (!side) return;
 
-      // Mirror the hand-maintained #outline list (including its nested
-      // sub-lists) rather than duplicating it in markup, so the two can
-      // never drift out of sync.
+      // The outline is authored in markup now, so there is nothing to build --
+      // this only pairs each in-page link with the element it points at, for
+      // the current-section highlight below.
       var bySection = [];
-
-      function mirrorList(sourceList, target) {
-        var list = document.createElement("ol");
-        sourceList.querySelectorAll(":scope > li").forEach(function (sourceLi) {
-          var link = sourceLi.querySelector(":scope > a");
-          var href = link && link.getAttribute("href");
-          if (!link || !href) return;
-          var li = document.createElement("li");
-          var a = document.createElement("a");
-          a.href = href;
-          a.textContent = link.textContent;
-          li.appendChild(a);
-          if (href.charAt(0) === "#") {
-            var id = href.slice(1);
-            var el = document.getElementById(id);
-            if (el) bySection.push({ id: id, el: el, link: a });
-          }
-
-          var sourceSublist = sourceLi.querySelector(":scope > ol");
-          if (sourceSublist) mirrorList(sourceSublist, li);
-
-          list.appendChild(li);
-        });
-        target.appendChild(list);
-      }
-
-      mirrorList(source.querySelector("ol"), side);
-      var back = source.querySelector(".toc-back");
-      if (back) mirrorList(back, side);
+      side.querySelectorAll('a[href^="#"]').forEach(function (link) {
+        var el = document.getElementById(link.getAttribute("href").slice(1));
+        if (el) bySection.push({ el: el, link: link });
+      });
       if (!bySection.length) return;
 
       var observer = new IntersectionObserver(
@@ -2338,28 +2356,11 @@
       );
       bySection.forEach(function (s) { observer.observe(s.el); });
 
-      // Reveal the outline once the static frontmatter outline (#outline)
-      // has scrolled out of view, so the two are never on screen together.
-      // This only sets .visible on both the pane and the button; CSS decides
-      // which of the two the current window width actually shows (see the
-      // "HOW THE OUTLINE FOLLOWS THE READER" block in styles.css).
-      // Scrolling back up to #outline also force-closes the button's panel,
-      // so it cannot be left open behind the frontmatter copy.
+      // No reveal-on-scroll any more: the outline is on screen from the top of
+      // the page down. CSS alone decides whether the current window is wide
+      // enough to show it as a pane or falls back to the button's panel (see
+      // the "HOW THE OUTLINE FOLLOWS THE READER" block in styles.css).
       var fab = document.getElementById("outline-fab");
-      var visibility = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            var away = !entry.isIntersecting;
-            side.classList.toggle("visible", away);
-            if (fab) fab.classList.toggle("visible", away);
-            if (!away && fab) {
-              side.classList.remove("open");
-              fab.setAttribute("aria-expanded", "false");
-            }
-          });
-        }
-      );
-      visibility.observe(source);
 
       if (fab) {
         fab.addEventListener("click", function () {
