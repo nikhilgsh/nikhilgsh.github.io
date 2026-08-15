@@ -1,5 +1,9 @@
 // Has to be in the head tag, otherwise a flicker effect will occur.
 
+// Theme preferences must be scoped because every page on this GitHub Pages
+// origin shares localStorage. In particular, /polora/ has its own toggle.
+const THEME_STORAGE_KEY = "homepage-theme";
+
 // Toggle through light, dark, and system theme settings.
 let toggleThemeSetting = () => {
   let themeSetting = determineThemeSetting();
@@ -14,7 +18,7 @@ let toggleThemeSetting = () => {
 
 // Change the theme setting and apply the theme.
 let setThemeSetting = (themeSetting) => {
-  localStorage.setItem("theme", themeSetting);
+  localStorage.setItem(THEME_STORAGE_KEY, themeSetting);
 
   document.documentElement.setAttribute("data-theme-setting", themeSetting);
 
@@ -254,7 +258,7 @@ let transTheme = () => {
 // Determine the expected state of the theme toggle, which can be "dark", "light", or
 // "system". Default is "system".
 let determineThemeSetting = () => {
-  let themeSetting = localStorage.getItem("theme");
+  let themeSetting = localStorage.getItem(THEME_STORAGE_KEY);
   if (themeSetting != "dark" && themeSetting != "light" && themeSetting != "system") {
     themeSetting = "system";
   }
