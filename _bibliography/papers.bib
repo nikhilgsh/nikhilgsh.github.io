@@ -25,9 +25,32 @@
   abstract={The growing scale of deep learning models has rendered standard hyperparameter (HP) optimization prohibitively expensive. A promising solution is the use of scale-aware hyperparameters, which can enable direct transfer of optimal HPs from small-scale grid searches to large models with minimal performance loss. To understand the principles governing such transfer strategy, we develop a general conceptual framework for reasoning about HP transfer across scale, characterizing transfer as fast when the suboptimality it induces vanishes asymptotically faster than the finite-scale performance gap. We show formally that fast transfer is equivalent to useful transfer for compute-optimal grid search, meaning that transfer is asymptotically more compute-efficient than direct tuning. While empirical work has found that the Maximal Update Parameterization (μP) exhibits fast transfer when scaling model width, the mechanisms remain poorly understood. We show that this property depends critically on problem structure by presenting synthetic settings where transfer either offers provable computational advantage or fails to outperform direct tuning even under μP. To explain the fast transfer observed in practice, we conjecture that decomposing the optimization trajectory reveals two contributions to loss reduction: (1) a width-stable component that determines the optimal HPs, and (2) a width-sensitive component that improves with width but weakly perturbs the HP optimum. We present empirical evidence for this hypothesis across various settings, including large language model pretraining.}
 }
 
+@article{simon2026theory,
+  title={There Will Be a Scientific Theory of Deep Learning},
+  author={Simon, Jamie and Kunin, Daniel and Atanasov, Alexander and Boix-Adser{\`a}, Enric and Bordelon, Blake and Cohen, Jeremy and Ghosh, Nikhil and Guth, Florentin and Jacot, Arthur and Kamb, Mason and Karkada, Dhruva and Michaud, Eric J. and Ottlik, Berkan and Turnbull, Joseph},
+  journal={arXiv preprint},
+  arxiv={2604.21691},
+  html={https://learningmechanics.pub},
+  preprint={true},
+  year={2026},
+  bibtex_show={true},
+  abstract={In this paper, we make the case that a scientific theory of deep learning is emerging. By this we mean a theory which characterizes important properties and statistics of the training process, hidden representations, final weights, and performance of neural networks. We pull together major strands of ongoing research in deep learning theory and identify five growing bodies of work that point toward such a theory: (a) solvable idealized settings that provide intuition for learning dynamics in realistic systems; (b) tractable limits that reveal insights into fundamental learning phenomena; (c) simple mathematical laws that capture important macroscopic observables; (d) theories of hyperparameters that disentangle them from the rest of the training process, leaving simpler systems behind; and (e) universal behaviors shared across systems and settings which clarify which phenomena call for explanation. Taken together, these bodies of work share certain broad traits: they are concerned with the dynamics of the training process; they primarily seek to describe coarse aggregate statistics; and they emphasize falsifiable quantitative predictions. We argue that the emerging theory is best thought of as a mechanics of the learning process, and suggest the name learning mechanics. We discuss the relationship between this mechanics perspective and other approaches for building a theory of deep learning, including the statistical and information-theoretic perspectives. In particular, we anticipate a symbiotic relationship between learning mechanics and mechanistic interpretability. We also review and address common arguments that fundamental theory will not be possible or is not important. We conclude with a portrait of important open directions in learning mechanics and advice for beginners.}
+}
+
+@article{zhang2026grape,
+  title={Does a Global Perspective Help Prune Sparse MoEs Elegantly?},
+  author={Zhang, Zeliang and Ghosh, Nikhil and Liu, Jiani and Yu, Bin and Liu, Xiaodong},
+  journal={arXiv preprint},
+  arxiv={2604.06542},
+  preprint={true},
+  year={2026},
+  bibtex_show={true},
+  abstract={Empirical scaling laws for language models have encouraged the development of ever-larger LLMs, despite their growing computational and memory costs. Sparse Mixture-of-Experts (MoEs) offer a promising alternative by activating only a subset of experts per forward pass, improving efficiency without sacrificing performance. However, the large number of expert parameters still leads to substantial memory consumption. Existing pruning methods typically allocate budgets uniformly across layers, overlooking the heterogeneous redundancy that arises in sparse MoEs. We propose GRAPE (Global Redundancy-Aware Pruning of Experts), a global pruning strategy that dynamically allocates pruning budgets based on cross-layer redundancy. Experiments on Mixtral-8x7B, Mixtral-8x22B, DeepSeek-MoE, Qwen-MoE, and GPT-OSS show that, under the same pruning budget, GRAPE consistently achieves the best average performance. On the three main models reported in the paper, it improves average accuracy over the strongest local baseline by 1.40% on average across pruning settings, with gains of up to 2.45%.}
+}
+
 @article{zhu2025gsmagent,
   title={GSM-Agent: Understanding Agentic Reasoning Using Controllable Environments},
-  author={Zhu, Hanlin and Guo, Tianyu and Mei, Song and Russell, Stuart and Ghosh, Nikhil and Bietti, Alberto, and Jiao, Jiantao},
+  author={Zhu, Hanlin and Guo, Tianyu and Mei, Song and Russell, Stuart and Ghosh, Nikhil and Bietti, Alberto and Jiao, Jiantao},
   journal={arXiv preprint},
   arxiv={2509.21998},
   preprint={true},
@@ -48,13 +71,27 @@
   abstract={Low-Rank Adaptation (LoRA) is a widely used finetuning method for large models. Its small memory footprint allows practitioners to adapt large models to specific tasks at a fraction of the cost of full finetuning. Different modifications have been proposed to enhance its efficiency by, for example, setting the learning rate, the rank, and the initialization. Another improvement axis is adapter placement strategy: when using LoRA, practitioners usually pick module types to adapt with LoRA, such as Query and Key modules. Few works have studied the problem of adapter placement, with nonconclusive results: original LoRA paper suggested placing adapters in attention modules, while other works suggested placing them in the MLP modules. Through an intuitive theoretical analysis, we introduce PLoP (Precise LoRA Placement), a lightweight method that allows automatic identification of module types where LoRA adapters should be placed, given a pretrained model and a finetuning task. We demonstrate that PLoP consistently outperforms, and in the worst case competes, with commonly used placement strategies through comprehensive experiments on supervised finetuning and reinforcement learning for reasoning.}
 }
 
+@inproceedings{hayou2024loraplus,
+  title={LoRA+: Efficient Low Rank Adaptation of Large Models},
+  author={Hayou, Soufiane and Ghosh, Nikhil and Yu, Bin},
+  booktitle={International Conference on Machine Learning (ICML)},
+  arxiv={2402.12354},
+  html={https://proceedings.mlr.press/v235/hayou24a.html},
+  code={https://github.com/nikhilgsh/loraplus},
+  preprint={false},
+  abbr={ICML},
+  year={2024},
+  bibtex_show={true},
+  abstract={In this paper, we show that Low Rank Adaptation (LoRA) as originally introduced in Hu et al. (2021) leads to suboptimal finetuning of models with large width (embedding dimension). This is due to the fact that adapter matrices A and B in LoRA are updated with the same learning rate. Using scaling arguments for large width networks, we demonstrate that using the same learning rate for A and B does not allow efficient feature learning. We then show that this suboptimality of LoRA can be corrected simply by setting different learning rates for the LoRA adapter matrices A and B with a well-chosen ratio. We call this proposed algorithm LoRA+. In our extensive experiments, LoRA+ improves performance (1-2 % improvements) and finetuning speed (up to ~ 2X SpeedUp), at the same computational cost as LoRA.}
+}
+
 @article{hayou2024impact,
   title={The Impact of Initialization on LoRA Finetuning Dynamics},
   author={Hayou, Soufiane and Ghosh, Nikhil and Yu, Bin},
   booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
   arxiv={2406.08447},
   preprint={false},
-  abbr={NeuRIPS},
+  abbr={NeurIPS},
   year={2024},
   bibtex_show={true},
   abstract={In this paper, we study the role of initialization in Low Rank Adaptation (LoRA) as originally introduced in Hu et al. (2021). Essentially, to start from the pretrained model as initialization for finetuning, one can either initialize B to zero and A to random (default initialization in PEFT package), or vice-versa. In both cases, the product BA is equal to zero at initialization, which makes finetuning starts from the pretrained model. These two initialization schemes are seemingly similar. They should in-principle yield the same performance and share the same optimal learning rate. We demonstrate that this is an incorrect intuition and that the first scheme (initializing B to zero and A to random) on average yields better performance compared to the other scheme. Our theoretical analysis shows that the reason behind this might be that the first initialization allows the use of larger learning rates (without causing output instability) compared to the second initialization, resulting in more efficient learning of the first scheme. We validate our results with extensive experiments on LLMs.}
@@ -96,10 +133,23 @@ Concretely, we first show that the test risk of RF regression decreases monotoni
   bibtex_show={true},
   preprint={false},
   award={spotlight},
-  abbr={NeuRIPS}, 
+  abbr={NeurIPS}, 
   year={2023},
   blog={https://blog.research.google/2023/11/alternating-updates-for-efficient.html},
   abstract={It has been well established that increasing scale in deep transformer networks leads to improved quality and performance. However, this increase in scale often comes with prohibitive increases in compute cost and inference latency. We introduce Alternating Updates (AltUp), a simple-to-implement method to increase a model's capacity without the computational burden. AltUp enables the widening of the learned representation, i.e., the token embedding, while only incurring a negligible increase in latency. AltUp achieves this by working on a subblock of the widened representation at each layer and using a predict-and-correct mechanism to update the inactivated blocks. We present extensions of AltUp, such as its applicability to the sequence dimension, and demonstrate how AltUp can be synergistically combined with existing approaches, such as Sparse Mixture-of-Experts models, to obtain efficient models with even higher capacity. Our experiments on benchmark transformer models and language tasks demonstrate the consistent effectiveness of AltUp on a diverse set of scenarios. Notably, on SuperGLUE and SQuAD benchmarks, AltUp enables up to 87% speedup relative to the dense baselines at the same accuracy.}
+}
+
+@inproceedings{dikkala2023routing,
+  title={On the Benefits of Learning to Route in Mixture-of-Experts Models},
+  author={Dikkala, Nishanth and Ghosh, Nikhil and Meka, Raghu and Panigrahy, Rina and Vyas, Nikhil and Wang, Xin},
+  booktitle={Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  pages={9376--9396},
+  html={https://aclanthology.org/2023.emnlp-main.583/},
+  preprint={false},
+  abbr={EMNLP},
+  year={2023},
+  bibtex_show={true},
+  abstract={Mixture-of-Expert (MoE) Transformer models, such as the Switch Transformer, allow us to successfully scale up model sizes while keeping the amount of compute time fixed. Prior work has established the computational efficiency benefits of using these models. A core component of these models is a router that routes input tokens to different experts in a layer. We show theoretical and empirical evidence that the router's ability to route tokens intelligently confers a significant advantage to MoE models. We study synthetic settings where the input data is distributed in clusters and show theoretically and empirically that the router learns to route the inputs according to these clusters. Then we perform experiments on real data using the T5X library, where we observe that a trainable router confers a non-trivial benefit instead of a non-trainable router.}
 }
 
 @article{ghosh2023universal,
@@ -152,6 +202,6 @@ In this paper, we consider the training dynamics of gradient flow on kernel leas
   arxiv={1910.12379},
   bibtex_show={true},
   preprint={false},
-  abbr={NeuRIPS},
+  abbr={NeurIPS},
   abstract={In this paper, we aim to learn a low-dimensional Euclidean representation from a set of constraints of the form "item j is closer to item i than item k". Existing approaches for this "ordinal embedding" problem require expensive optimization procedures, which cannot scale to handle increasingly larger datasets. To address this issue, we propose a landmark-based strategy, which we call Landmark Ordinal Embedding (LOE). Our approach trades off statistical efficiency for computational efficiency by exploiting the low-dimensionality of the latent embedding. We derive bounds establishing the statistical consistency of LOE under the popular Bradley-Terry-Luce noise model. Through a rigorous analysis of the computational complexity, we show that LOE is significantly more efficient than conventional ordinal embedding approaches as the number of items grows. We validate these characterizations empirically on both synthetic and real datasets. We also present a practical approach that achieves the "best of both worlds", by using LOE to warm-start existing methods that are more statistically efficient but computationally expensive.}
 }
