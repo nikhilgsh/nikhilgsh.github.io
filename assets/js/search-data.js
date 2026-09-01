@@ -18,10 +18,17 @@ ninja.data = [{
           },
         },{id: "nav-publications",
           title: "publications",
-          description: "* denotes equal contribution",
+          description: "Publications by Nikhil Ghosh on deep learning, optimization, scaling, and efficient architectures.",
           section: "Navigation",
           handler: () => {
             window.location.href = "/publications/";
+          },
+        },{id: "nav-cv",
+          title: "cv",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/cv/";
           },
         },{id: "news-started-phd-at-uc-berkeley",
           title: 'Started PhD at UC Berkeley.',
@@ -50,7 +57,7 @@ ninja.data = [{
         title: 'GitHub',
         section: 'Socials',
         handler: () => {
-          window.open("https://github.com/nikhil-ghosh-berkeley", "_blank");
+          window.open("https://github.com/nikhilgsh", "_blank");
         },
       },{
         id: 'social-linkedin',
