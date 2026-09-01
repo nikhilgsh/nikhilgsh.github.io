@@ -16,11 +16,11 @@ selected_papers: false # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 
 announcements:
-  enabled: true # includes a list of news items
-  scrollable: true # adds a vertical scroll bar if there are more than 3 news items
-  limit: 5 # leave blank to include all the news in the `_news` folder
+  enabled: false # hide the news section on the homepage
+  scrollable: false # keep the short, curated list fully visible
+  limit: 4 # show only the four most recent news items
 ---
 
 I am a research fellow in the Center for Computational Mathematics (CCM) at the Flatiron Institute. I completed my PhD in the Statistics department at UC Berkeley where I was advised by <a href='https://binyu.stat.berkeley.edu/'>Bin Yu</a> and <a href='https://www.stat.berkeley.edu/~songmei/'>Song Mei</a>. I have also collaborated with <a href='http://misha.belkin-wang.org/'>Misha Belkin</a> at UC San Diego. Previously, I completed my B.S. in Computer Science at Caltech where I worked with <a href='http://www.yisongyue.com/'>Yisong Yue</a>.
 
-I am broadly interested in developing a better foundational understanding of **deep learning** as well as improving real-world systems. Currently, I am particularly interested in questions related to model **scaling** and **optimization**.
+My research spans the foundations and practice of deep learning, with an emphasis on **optimization, scaling, and efficient architectures**. Recently, I have worked on hyperparameter transfer, parameter-efficient finetuning, and sparse neural networks.

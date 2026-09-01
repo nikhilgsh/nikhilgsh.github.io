@@ -1,7 +1,14 @@
 ---
 ---
+{% assign show_publication_media = false %}
+{% if site.enable_publication_thumbnails %}
+  {% if entry.abbr != blank or entry.preview != blank %}
+    {% assign show_publication_media = true %}
+  {% endif %}
+{% endif %}
+
 <div class="row">
-  {% if site.enable_publication_thumbnails %}
+  {% if show_publication_media %}
     <div class="col col-sm-2 abbr">
       {%- if entry.abbr -%}
         {%- if site.data.venues[entry.abbr] -%}
@@ -46,7 +53,7 @@
   {% endif %}
 
   <!-- Entry bib key -->
-  <div id="{{ entry.key }}" class="{% if site.enable_publication_thumbnails %}col-sm-8{% else %}col-sm-10{% endif %}">
+  <div id="{{ entry.key }}" class="{% if show_publication_media %}col-sm-8{% else %}col-sm-10{% endif %}">
     <!-- Title -->
     <div class="title">{{ entry.title }}</div>
     <!-- Author -->

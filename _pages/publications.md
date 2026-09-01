@@ -2,7 +2,7 @@
 layout: page
 permalink: /publications/
 title: publications
-description: <span>*</span> denotes equal contribution
+description: Publications by Nikhil Ghosh on deep learning, optimization, scaling, and efficient architectures.
 nav: true
 nav_order: 2
 ---
@@ -12,6 +12,8 @@ nav_order: 2
 <!-- Bibsearch Feature -->
 
 {% include bib_search.liquid %}
+
+<p class="post-description"><span>*</span> denotes equal contribution.</p>
 
 <div class="publications">
 
